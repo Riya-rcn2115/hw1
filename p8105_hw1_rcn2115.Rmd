@@ -1,0 +1,82 @@
+---
+title: "p8105_hw1_rcn2115"
+author: "Riya Nadkarni"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+# Problem 1
+
+#Loading the dataset
+
+```{r}
+data("penguins", package = "palmerpenguins")
+```
+# Description of the dataset
+
+This dataset contains the measurements and characteristics of penguins and includes variables like **species**, **island,bill_length_mm**, **bill_depth_mm**, **flipper_length_mm**, **body_mass_g**, **sex** and **year**.
+
+This dataset has `r nrow(penguins)` rows and `r ncol(penguins)` columns. 
+
+The mean flipper length is `r round(mean(penguins$flipper_length_mm, na.rm=TRUE),2)` mm
+
+# Creating a scattterplot
+
+```{r, yx_scatter}
+ggplot(data = penguins, aes(x = bill_length_mm, y = flipper_length_mm, color = species)) + 
+  geom_point()
+ggsave("flipper_vs_bill_scatterplot.png")
+```
+
+# Problem 2
+
+#Creating a dataframe
+
+```{r, df_create}
+hw1_df = 
+  tibble(
+    norm_samp=rnorm(10),
+    vec_logical = norm_samp > 0,
+    vec_char = c("A","B","C","D","E","F","G","H","I","J"),
+    vec_factor= factor(c("low","medium","high","low","medium","high","low","medium","high","low"))
+  )
+print(hw1_df)
+```
+
+#Taking the mean of each variable in the dataframe
+
+This works and gives the mean of the numeric vector.
+```{r}
+mean(pull(hw1_df, norm_samp))
+```
+
+This works since the logical vector is treated as numeric (TRUE = 1 and FALSE = 0). 
+```{r}
+mean(pull(hw1_df, vec_logical))
+```
+
+This does not work as characters cannot be averaged. 
+```{r}
+mean(pull(hw1_df, vec_char))
+```
+
+This does not work as factors need to be converted to numeric before their mean can be calculated.
+```{r}
+mean(pull(hw1_df, vec_factor))
+```
+
+# Converting logical, character, and factor variables to numeric
+```{r, eval = FALSE}
+converted_vec_logical = as.numeric(hw1_df$vec_logical)
+converted_vec_char = as.numeric(hw1_df$vec_char)
+converted_vec_factor = as.numeric(hw1_df$vec_factor)
+```
+
+The **logical** values are converted to numerical values (1 and 0). TRUE becomes 1 and FALSE becomes 0. This explains why we get the mean for these values. 
+
+The **character** variable conversion gives a warning ( Warning: NAs introduced by coercion). This explains why we get "NA" when we try to take the mean.
+
+The **factor** levels (non-numeric) are assigned integral values. This explains why we can get the mean for these values. 
